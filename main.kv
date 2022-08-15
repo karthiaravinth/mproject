@@ -1,0 +1,513 @@
+#:import Window kivy.core.window.Window
+
+<HomeScreen>:
+    name : 'homeWin'
+    id : homeWinId
+    MDBoxLayout:
+        orientation : 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+        MDToolbar:
+            title: "Staff Details"
+            pos_hint: {"top": 1}
+            right_action_items : [["dots-vertical", lambda x: root.callback(x)]]
+        MDBoxLayout:
+            adaptive_height: True
+            size_hint_y : .1
+            MDIconButton:
+                icon: 'magnify'
+            MDTextField:
+                id: search_field
+                hint_text: 'Filter'
+                on_text: root.filter_method(self.text, True)
+            MDDropDownItem:
+                id: filter_opt_id
+                text :"All"
+                pos_hint: { 'center_y': .6}
+                size_hint_x:.32
+                on_release: root.filter_opt_open()          
+        RecycleView:
+            id: rv
+            key_viewclass: 'viewclass'
+            key_size: 'height'
+        MDFlatButton:
+            id: home_pdfgen_id
+            size_hint_y : .07
+            text: "Download PDF"
+            theme_text_color: "Custom"
+            pos_hint : {"center_y":.5,'center_x':.62}
+            text_color: 0, .1, .9, .95
+            on_press: root.pdfobj.createPDF(root.d+root.stafflist,'homeView')
+
+<LoginPage> :
+    name :'loginWin'
+    id: logWinId
+    MDCard :
+        size_hint : None,None
+        size : (Window.size[0]/1.05,Window.size[1]/1.1)
+        pos_hint : {"center_x":.5,"center_y":.5}
+        elevation : 10
+        md_bg_color : [144/255,238/255,144/255,1]
+        padding : 20
+        spacing : 20
+        orientation : "vertical"
+        MDLabel :
+            text : 'INSTITUTE LOGIN'
+            font_style : 'Button'
+            font_size : 30
+            halign : "center"
+            size_hint_y : .2
+            height : self.texture_size[1]
+            padding_y : 15
+        MDTextFieldRound :
+            id:email_or_code_id
+            hint_text : "Email/InstituteCode"
+            icon_right : "account"
+            size_hint_x : None
+            width : 220
+            font_size : 20
+            pos_hint : {"center_x":.5}
+            color_active : [1,1,1,1]
+        MDTextFieldRound :
+            id:passcheck_id
+            hint_text : "password"
+            icon_right : "eye-off"
+            size_hint_x : None
+            width : 220
+            font_size : 20
+            pos_hint : {"center_x":.5}
+            color_active : [1,1,1,1]
+            password : True
+        MDFillRoundFlatButton :
+            text : 'SIGN-UP'
+            pos_hint : {"center_x":.5}
+            size_hint_y : .1
+            width :110
+            font_size : 15
+            on_press : root.checkPassword()
+        MDFlatButton:
+            text: "Forget Password"
+            theme_text_color: "Custom"
+            pos_hint : {"center_x":.5}
+            size_hint_y : .05
+            text_color: 0, 0, 1, 1
+            on_press : root.manager.current = 'forgetWin'
+        MDRaisedButton:
+            text : "Create an Account"
+            height : 10
+            width :130
+            font_size : 15
+            size_hint_y : .1
+            md_bg_color :  (227/255,130/255,219/255,1)
+            pos_hint : {"center_x":.5}
+            on_press : root.manager.current = 'instituteWin'
+        
+<ForgetView>:
+    name : 'forgetWin'
+    id : forgetWinId
+    MDCard :
+        id:mdcard_id
+        size_hint : None,None
+        size : (Window.size[0]/1.1,Window.size[1]/1.25)
+        pos_hint : {"center_x":.5,"center_y":.5}
+        elevation : 36
+        md_bg_color : [130/255,180/255,160/255,1]
+        padding : 30
+        spacing : 30
+        orientation : "vertical"
+        MDLabel :
+            text : 'RESET PASSWORD'
+            font_style : 'Button'
+            font_size : 20
+            halign : "center"
+            size_hint_y : .175
+            height : self.texture_size[1]
+            padding_y : 15
+        MDTextFieldRound :
+            id:email_id
+            hint_text : "Email ID"
+            icon_right : "account"
+            size_hint: None,.15
+            width : 220
+            font_size : 20
+            pos_hint : {"center_x":.5}
+            color_active : [1,1,1,1]
+        MDTextFieldRound:
+            id:otp_id
+            font_size : 20
+            multiline:False
+            disabled:True
+            hint_text:'OTP'
+            width : 200
+            size_hint : None,.15
+            pos_hint : {"center_x":.5} 
+            color_active : [.2,.5,.5,1]
+        MDBoxLayout:
+            id:boxlay1inforget_id
+            orientation:'vertical'
+            size_hint_y : .35
+        MDRaisedButton:
+            id:but_id
+            text : 'Send OTP'
+            md_bg_color:(1,0,0,1)
+            size_hint : 1,.14
+            pos_hint : {"center_y":.5,'center_x':.5}
+            on_press:root.checkOtp() if self.text =='Submit' else root.setpassword() if self.text=="Save Password" else root.sendOTP()
+        MDFlatButton:
+            id:forgetmail_id
+            text: "Forget Email"
+            size_hint_y : .07
+            theme_text_color: "Custom"
+            pos_hint : {"center_y":.5,'center_x':.5}
+            text_color: 0, 0, 1, 1
+            on_press:root.forgetMail()
+<InstituteLogin>:
+    name : 'instituteWin'
+    id : instituteWinId
+    MDBoxLayout :
+        pos_hint : {"center_x":.5,"center_y":.5}
+        md_bg_color: (100/255,1,1,1)
+        padding : 5
+        spacing : 5
+        orientation : "vertical"
+        MDLabel :
+            text : 'CREATE AN ACCOUNT'
+            text_color :(0,0,1,1)
+            font_style : 'Button'
+            font_size : 20
+            halign : "center"
+        MDTextField:
+            id: insField_drop_id
+            pos_hint: { 'center_x': .5}
+            mode: "rectangle"
+            fill_color: 0, 0, 0, .009
+            text_color :(140/255,75/255,171/255,1)
+            size_hint_x :.85
+            width: "200dp"
+            hint_text: "Field"
+            current_hint_text_color : (1,25/255,25/255,1)
+            color_mode: 'accent'
+            on_focus: if self.focus: root.dropMenuForClgField.open()
+            #on_text_validate: root.dropMenuForClgField.open()
+        MDTextField:
+            id: insType_drop_id
+            pos_hint: { 'center_x': .5}
+            mode: "rectangle"
+            fill_color: 0, 0, 0, .009
+            text_color :(140/255,75/255,171/255,1)
+            size_hint_x :.85
+            width: "200dp"
+            hint_text: "Type"
+            current_hint_text_color : (1,25/255,25/255,1)
+            color_mode: 'accent'
+            on_focus: if self.focus: root.getTypeOfInstitute()
+            on_text_validate: root.set_item_for_TypeInstitute(self.text)
+        MDTextField:
+            id: insName_drop_id
+            pos_hint: { 'center_x': .5}
+            multiline:True
+            mode: "rectangle"
+            text_color :(140/255,75/255,171/255,1)
+            fill_color: 0, 0, 0, .009
+            size_hint_x :.85
+            max_height: "110dp"
+            width: "200dp"
+            color_mode: 'accent'
+            hint_text: "College Name" 
+            text: "--select--"  
+            current_hint_text_color : (1,25/255,25/255,1)
+            on_focus: if self.focus: root.getCollegeName()
+            on_text_validate: root.set_item_for_clgName(self.text)
+        MDTextField:
+            id: insCode_drop_id
+            pos_hint: { 'center_x': .5}
+            mode: "rectangle"
+            fill_color: 0, 0, 0, .009
+            text_color :(140/255,75/255,171/255,1)
+            size_hint_x :.85
+            width: "200dp"
+            hint_text: "College Code"
+            current_hint_text_color : (1,25/255,25/255,1)
+            text: "--select--" 
+            color_mode: 'accent'
+            on_focus: if self.focus: root.getCollegeCode()
+            on_text_validate: root.set_item_for_clgCode(self.text)
+        MDTextFieldRound :
+            id: email_id
+            hint_text : "email"
+            size_hint_x : None
+            width : 175
+            font_size : 15
+            pos_hint : {"center_x":.5}
+            color_active : [1,1,1,1]
+        MDTextFieldRound :
+            hint_text : "password"
+            id: pass_id
+            size_hint_x : None
+            width : 175
+            font_size : 15
+            pos_hint : {"center_x":.5}
+            color_active : [1,1,1,1]
+            password : True
+        MDTextFieldRound :
+            id: conPass_id
+            hint_text : "confirm password"
+            size_hint_x : None
+            width : 175
+            font_size : 15
+            pos_hint : {"center_x":.5}
+            color_active : [1,1,1,1]
+            password : True
+        MDFillRoundFlatButton :
+            text : 'CREATE'
+            pos_hint : {"center_x":.5}
+            width :120
+            font_size : 13
+            on_press: 
+                if root.mailAndPassChecker() :root.manager.current = 'loginWin'
+<CollegeView>:
+    name : 'clgWin'
+    id : clgWinId
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding:5
+        spacing:5
+        MDLabel:
+            id:title_text_id
+            halign : "center"
+            size_hint_y : .18 
+            pos_hint :  {'top':1}
+            font_size : 13
+            text_color :(124/255,142/255,188/255,1)
+        MDRoundFlatButton:
+            text : 'ADD MEMBERS'
+            pos_hint : {"center_x":.5}
+            size_hint_y : .1 
+            width :130
+            font_size : 13
+            on_release : root.addMembers()
+        MDBoxLayout:
+            size_hint_y:.1
+            MDBoxLayout:
+                size_hint_x :.5
+                spacing :5
+                padding:5
+                MDFillRoundFlatButton :
+                    text : 'Edit'
+                    id : editbut_id
+                    pos_hint : {'center_x':.5,'center_y':.5}
+                    font_size : 12
+                    disabled:True
+                    md_bg_color : (0,1,0,.9)
+                    on_press: root.editRow()
+            MDBoxLayout:
+                size_hint_x:.5
+                spacing :5
+                padding:5
+                MDFillRoundFlatButton :
+                    text : 'Delete'
+                    id : deletebut_id
+                    pos_hint : {'center_x':.5,'center_y':.5}
+                    font_size : 12
+                    disabled:True
+                    md_bg_color : (1,0,0,.9)
+                    on_press: root.deleteRow()
+        BoxLayout:
+            size_hint_y : 1
+            orientation : 'vertical'
+            pos_hint : {'center_x':.5,'center_y':.5}
+            spacing : 3
+            id : box_datatable_clg_id
+        MDFlatButton:
+            id: pdfgen_clgview_id
+            size_hint_y : .05
+            text: "Download PDF"
+            theme_text_color: "Custom"
+            pos_hint : {"center_y":.5,'center_x':.62}
+            text_color: 0, .1, .9, .95
+            on_press: root.pdfobj.createPDF(root.d+root.stafflist,'clgView',root.clgName)
+<FacultyView>:
+	name : 'facWin'
+	id: facultyWinId
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding:5
+        spacing:5
+        MDToolbar:
+            title: "Form"
+            pos_hint: {"top": 1}
+            right_action_items : [["dots-vertical", lambda x: root.callback(x)]]
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                padding:(5,5)
+                text:'First Name'
+                valign : 'middle'
+                size_hint_x : .8
+            MDTextField: 
+                id:fac_firstName_id
+                text:""
+                multiline: False
+                pos_hint : {"center_y":.6}
+                line_color_normal : (57/255,165/255,220/255,1)
+                size_hint_x : 1
+                width :400
+                #required:True
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Last Name'
+                padding:(5,5)
+                size_hint_x : .8
+                valign :'center' 
+            MDTextField: 
+                id:fac_lastName_id
+                text:"" 
+                pos_hint : {"center_y":.6}
+                size_hint_x : 1
+                line_color_normal : (57/255,165/255,220/255,1)
+                width :400
+                multiline: False
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Staff ID'
+                padding:(5,5)
+                size_hint_x : .8
+                valign :'center' 
+            MDTextField: 
+                id:fac_staff_id
+                text:"" 
+                pos_hint : {"center_y":.6}
+                size_hint_x : 1
+                line_color_normal : (57/255,165/255,220/255,1)
+                width :400
+                multiline: False
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Date Of Birth'
+                padding:(5,5)
+                size_hint_x : .8
+                valign :'center'
+            MDTextField: 
+                id:fac_dob_id
+                icon_right : 'calendar-month-outline'
+                hint_text:"dd/mm/yyyy"
+                pos_hint : {"center_y":.6,'center_x':.5}
+                line_color_normal : (57/255,165/255,220/255,1)
+                size_hint_x :1
+                width :400
+                multiline: False
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Gender'
+                padding:(5,5)
+                valign :'center' 
+                size_hint_x:.45
+            MDDropDownItem:
+                id: fac_gender_id
+                text :"Male"
+                pos_hint: { 'center_y': .6}
+                size_hint_x:.55
+                on_release: root.OnClickGender()
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Role'
+                padding:(5,5)
+                size_hint_x : .8
+                valign :'center' 
+            MDTextField: 
+                text:"" 
+                id:fac_role_id
+                pos_hint : {"center_y":.6}
+                line_color_normal : (57/255,165/255,220/255,1)
+                size_hint_x : 1
+                width :400
+                multiline: False
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Joint Date'
+                padding:(5,5)
+                size_hint_x : .8
+                valign :'center'
+            MDTextField: 
+                hint_text:"dd/mm/yyyy"
+                id:fac_joinDate_id
+                pos_hint : {"center_y":.6}
+                line_color_normal : (57/255,165/255,220/255,1)
+                icon_right : 'calendar-month-outline'
+                size_hint_x : 1
+                width :400
+                multiline: False            
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Is apply transfer'
+                padding:(5,5)
+                valign :'center' 
+                size_hint_x:.45
+            MDDropDownItem:
+                id: fac_istrans_id
+                pos_hint: { 'center_y': .6}
+                size_hint_x:.55
+                on_release: root.OnClickIsTransfer()
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Tran Clg Name'
+                padding:(5,5)
+                valign :'center' 
+                size_hint_x:.45
+            MDTextField:
+                id: fac_transclg_id
+                pos_hint: { 'center_y': .6}
+                size_hint_x:.55
+                on_focus: if not self.disabled :root.getCollegeName()
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Tran Clg Code'
+                padding:(5,5)
+                valign :'center' 
+                size_hint_x:.45
+            MDTextField:
+                id: fac_transcode_id
+                pos_hint: { 'center_y': .6}
+                size_hint_x:.55
+                on_focus: if not self.disabled: root.getCollegeCode()
+        MDBoxLayout:
+            padding:(5,5)
+            spacing:(3,3)
+            MDLabel:
+                text:'Other Info'
+                padding:(5,5)
+                size_hint_x : .8
+                valign :'center'
+            MDTextField: 
+                text:"" 
+                id:fac_other_id
+                pos_hint : {"center_y":.88}
+                size_hint_x : 1
+                line_color_normal : (57/255,165/255,220/255,1)
+                width :400
+
+        MDRectangleFlatButton:
+            text : 'submit'
+            size_hint:(1,None)
+            pos_hint : {"center_y":.5,'center_x':.5}
+            on_press:
+                root.collectDetails()
